@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<JFrame
+        xmlns="javax.swing"
+        xmlns:x="mustbedeclared!"
+        xmlns:j="java.lang"
+        xmlns:p="de.mq32.swingpf"
+        Title="XML Swing File"
+        Size="300,200"
+        LocationRelativeTo="null"
+        DefaultCloseOperation="3">
+    <j:String x:Key="myString">Hello World!</j:String>
+    <ImageIcon x:Key="icon">arrow_blue.png</ImageIcon>
+    <p:Buddy x:Key="felixBuddy"
+             Name="Felix"
+             ProfileImage="Quark"
+             PublicKey="SuckIt"
+             Age="20"/>
+    <JMenuBar
+            x:Key="menuBar"
+            Background="#88FF88">
+        <JMenu Text="File">
+            <JMenuItem Text="New"/>
+            <JMenuItem Text="Open" ToolTipText="Opens a file"/>
+            <JMenuItem Text="Save" ToolTipText="Saves the current file"/>
+            <JMenuItem Text="Save as..."/>
+            <JMenuItem Text="Quit"/>
+        </JMenu>
+    </JMenuBar>meh
+    <JFrame.JMenuBar>{Resource menuBar}</JFrame.JMenuBar>
+    <JPanel  x:Key="rootPanel" Layout="null">
+        <JButton x:Key="toolTipButton"
+                 ToolTipText="A ToolTip is here!"
+                 Bounds="50,60,120,30"
+                 Text="{Resource myString}"/>
+        <JButton x:Key="exitButton" Bounds="50,100,120,30" Text="Exit"/>
+        <JLabel Bounds="10,10,100,30" Text="{Binding Name}" />
+    </JPanel>
+</JFrame>
