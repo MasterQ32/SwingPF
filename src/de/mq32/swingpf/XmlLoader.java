@@ -29,7 +29,7 @@ public class XmlLoader implements IElementParser {
     private AttributeParser attributeParser;
     private LoaderCollection loaders;
 
-    public XmlLoader() throws UnsupportedEncodingException, ParserConfigurationException {
+    public XmlLoader() throws ParserConfigurationException {
 
         this.resources = new ResourceCollection();
         this.loaders = new LoaderCollection(this.resources);
@@ -38,8 +38,6 @@ public class XmlLoader implements IElementParser {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         dbf.setNamespaceAware(true);
         db = dbf.newDocumentBuilder();
-        OutputStreamWriter errorWriter = new OutputStreamWriter(System.err, "utf-8");
-        //db.setErrorHandler(new MyErrorHandler(new PrintWriter(errorWriter, true)));
     }
 
     public Object load(String fileName) throws IOException, SAXException, ClassNotFoundException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
@@ -60,8 +58,6 @@ public class XmlLoader implements IElementParser {
         } else {
             definition = Class.forName("javax.swing." + tagName);
         }
-
-        System.out.println("Parsing " + definition.getName() + "...");
 
         Object target;
 

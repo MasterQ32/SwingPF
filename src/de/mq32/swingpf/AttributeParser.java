@@ -95,7 +95,7 @@ public class AttributeParser {
         this.converters.put(Color.class, new IConverter() {
             @Override
             public Object convert(String value) {
-               return Color.decode(value);
+                return Color.decode(value);
             }
         });
     }
@@ -121,8 +121,6 @@ public class AttributeParser {
             }
 
             String attributeName = child.getTagName().substring(clazz.getSimpleName().length() + 1);
-
-            System.out.println(attributeName);
 
             if (child.hasChildNodes()) {
                 // Assert we only have one child.
@@ -173,87 +171,101 @@ public class AttributeParser {
 
         assert (isConverted && attrValue instanceof String);
 
-
-        // Check if we have x:Key as attribute.
-        if (attrName.equals("x:Key")) {
-            assert (isConverted == false);
-            // If yes, add the object to the resource collection
-            this.resources.addResource((String) attrValue, target);
-            return;
-        }
-
         // Check for bindings, resources, ...
         if (!isConverted) {
             String meta = (String) attrValue;
             if (meta.startsWith("{") && meta.endsWith("}")) {
 
+                MetaAttributeValue value = MetaAttributeValue.parse(meta);
+                assert (value != null);
 
-                if (meta.startsWith("{Binding ")) {
-                    throw new NotImplementedException();
-                }
-                if (meta.startsWith("{Resource ")) {
-                    // Get resource name
-                    String resourceName = meta.substring(
-                            meta.indexOf(" ") + 1,
-                            meta.lastIndexOf("}"));
-
-                    // Check for resource
-                    if (!this.resources.hasResource(resourceName)) {
-                        throw new IllegalStateException("Resource " + resourceName + " not found!");
-                    }
-
-                    // Load the resource value into the attribute instead of the text.
-                    attrValue = this.resources.findResource(resourceName);
-                    isConverted = true;
-                }
+                attrValue = value.apply(this.resources, attrName, target);
+                isConverted = true;
             }
         }
 
-        for (Method method : clazz.getMethods()) {
-            if (!method.getName().equals("set" + attrName)) {
+        if (attrName.startsWith("x:")) {
+
+            // Check if we have x:Key as attribute.
+            if (attrName.equals("x:Key")) {
+                assert (isConverted == false);
+                // If yes, add the object to the resource collection
+                this.resources.addResource((String) attrValue, target);
+                return;
+            }
+
+            if (attrName.equals("x:DataSource")) {
+                assert (isConverted == true);
+                DataSource.get(target).setValue(attrValue);
+                return;
+            }
+
+            assert (false);
+        }
+
+        if (isConverted == false) {
+            // Try to convert the value to the first fitting method...
+
+
+            boolean convertToString = false;
+            for (Method method : target.getClass().getMethods()) {
+                if (!method.getName().equals("set" + attrName)) {
+                    continue;
+                }
+                if (method.getParameterCount() != 1) {
+                    continue;
+                }
+                Parameter param = method.getParameters()[0];
+                IConverter conv = getConverter(param.getType());
+                if (conv == null) {
+                    continue;
+                }
+                attrValue = conv.convert((String) attrValue);
+                convertToString = param.getType() == String.class;
+                break;
+            }
+            if(convertToString == false && "null".equals(attrValue)){
+                attrValue = null;
+            }
+        }
+
+        assert (isConverted == true);
+
+        setValue(target, attrName, attrValue);
+    }
+
+    public static void setValue(Object target, String attributeName, Object value) {
+//        if(value != null) {
+//            System.out.println("<- " + value.getClass() + " = " + value);
+//        }
+//        else {
+//            System.out.println("<- ??? = null");
+//        }
+        for (Method method : target.getClass().getMethods()) {
+            if (!method.getName().equals("set" + attributeName)) {
                 continue;
             }
             if (method.getParameterCount() != 1) {
                 continue;
             }
             Parameter param = method.getParameters()[0];
-
-            if (isConverted) {
+            //System.out.println("-> " + param.getType());
+            try {
+                method.invoke(target, param.getType().cast(value));
+                return;
+            } catch (Exception e1) {
                 try {
-                    method.invoke(target, attrValue);
-                    setValue = true;
-                    break;
-                } catch (Exception ex) {
-                    System.out.println("Failed to set value of type:");
-                    System.out.println("Source type: " + attrValue.getClass().getName());
-                    System.out.println("Target type: " + param.getType().getName());
-                    ex.printStackTrace();
-                }
-            } else {
-                if (param.getType() != String.class && attrValue.equals("null")) {
-                    method.invoke(target, new Object[]{null});
-                    setValue = true;
-                    break;
-                }
-
-                IConverter converter = this.getConverter(param.getType());
-                if (converter == null) {
-                    System.out.println("Converter for " + param.getType().getName() + " not found.");
-                    continue;
-                }
-                try {
-                    Object value = converter.convert((String) attrValue);
                     method.invoke(target, value);
-                    setValue = true;
-                    break;
-                } catch (Exception ex) {
-                    System.out.println("Failed to convert value:");
-                    ex.printStackTrace();
+                    return;
+                } catch (Exception e2) {
+                    //e2.printStackTrace();
                 }
+                //System.out.println("Failed to set value of type:");
+                //System.out.println("Source type: " + value.getClass().getName());
+                //System.out.println("Target type: " + param.getType().getName());
+
             }
         }
-        if (!setValue) {
-            throw new IllegalStateException("Setter set" + attrName + " not found!");
-        }
+        throw new IllegalStateException("Setter set" + attributeName + " not found!");
     }
 }

@@ -3,6 +3,7 @@ package de.mq32.swingpf;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.beans.PropertyChangeListener;
 
 /**
  * Created by Felix on 25.06.2014.
@@ -18,6 +19,8 @@ public class TestFrame extends JFrame {
         button.setText("Kekse?");
 
         JMenuBar menuBar = new JMenuBar();
+
+        menuBar.addPropertyChangeListener(null);
 
         JMenu menu = new JMenu();
         menu.setText("File");

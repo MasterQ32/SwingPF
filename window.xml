@@ -25,7 +25,7 @@
             <JMenuItem Text="Save as..."/>
             <JMenuItem Text="Quit"/>
         </JMenu>
-    </JMenuBar>meh
+    </JMenuBar>
     <JFrame.JMenuBar>{Resource menuBar}</JFrame.JMenuBar>
     <JPanel  x:Key="rootPanel" Layout="null">
         <JButton x:Key="toolTipButton"
@@ -33,6 +33,6 @@
                  Bounds="50,60,120,30"
                  Text="{Resource myString}"/>
         <JButton x:Key="exitButton" Bounds="50,100,120,30" Text="Exit"/>
-        <JLabel Bounds="10,10,100,30" Text="{Binding Name}" />
+        <JLabel Bounds="10,10,100,30" x:DataSource="{Resource exitButton}" Text="{Binding Path=Text}"/>
     </JPanel>
 </JFrame>

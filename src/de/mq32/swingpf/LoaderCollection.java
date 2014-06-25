@@ -88,51 +88,6 @@ public class LoaderCollection {
                 }
             }
         });
-        /*
-        this.loaders.put(JMenuBar.class, new AbstractLoader(this.loaders, this.resources) {
-            @Override
-            public void load(Element element, Object target, IElementParser parser) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException, InstantiationException, ClassNotFoundException {
-                JMenuBar menuBar = (JMenuBar) target;
-                NodeList children = element.getChildNodes();
-                for (int i = 0; i < children.getLength(); i++) {
-                    Node node = children.item(i);
-                    System.out.println("Scan: " + node.getClass().getName() + " -> " + node.getLocalName());
-                    if (!(node instanceof Element)) {
-                        continue;
-                    }
-                    if (AttributeParser.checkAttributeNode(target.getClass(), (Element) node)) {
-                        continue; // Element is attribute element
-                    }
-                    Object child = parser.parseElement((Element) node);
-                    if (child instanceof JMenu) {
-                        menuBar.add((JMenu) child);
-                        System.out.println("Oh wonder?");
-                    }
-                }
-            }
-        });
-        this.loaders.put(JMenuItem.class, new AbstractLoader(this.loaders, this.resources) {
-            @Override
-            public void load(Element element, Object target, IElementParser parser) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException, InstantiationException, ClassNotFoundException {
-                JMenuItem menuItem = (JMenuItem) target;
-                NodeList children = element.getChildNodes();
-                for (int i = 0; i < children.getLength(); i++) {
-                    Node node = children.item(i);
-                    System.out.println("Scan Sub: " + node.getClass().getName() + " -> " + node.getLocalName());
-                    if (!(node instanceof Element)) {
-                        continue;
-                    }
-                    if (AttributeParser.checkAttributeNode(target.getClass(), (Element) node)) {
-                        continue; // Element is attribute element
-                    }
-                    Object child = parser.parseElement((Element) node);
-                    if (child instanceof JMenuItem) {
-                        menuItem.add((JMenuItem) child);
-                        System.out.println("Oh wonder what happens?");
-                    }
-                }
-            }
-        });*/
     }
 
     /**
